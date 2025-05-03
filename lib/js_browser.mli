@@ -15,6 +15,7 @@ module [@js.scope "Promise"] Promise: sig
   [@@@js.stop]
   val then_: ?error:(Ojs.t -> unit) -> success:('a -> unit) -> 'a t -> unit
   val and_then: ?error:(Ojs.t -> unit) -> ('a -> 'b t) -> 'a t -> 'b t
+  val map : ('a -> 'b) -> 'a t -> 'b t
   [@@@js.start]
 
   [@@@js.implem
@@ -22,7 +23,11 @@ module [@js.scope "Promise"] Promise: sig
     let then_ ?error ~success t = then_ t ~success ~error
 
     val and_then : Ojs.t -> success:('a -> 'b t) -> error:(Ojs.t -> unit) option -> 'b t [@@js.call "then"]
-    let and_then ?error success t = and_then t ~success ~error  ]
+    let and_then ?error success t = and_then t ~success ~error
+
+    val map : Ojs.t -> ('a -> 'b) -> 'b t [@@js.call "then"]
+    let map f t = map t f
+  ]
 end
 
 module Storage : sig
