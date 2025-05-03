@@ -4,20 +4,25 @@
 
 (** {1 Bindings for the DOM and other client-side Javascript APIs} *)
 
-module Promise: sig
-  [@@@js.stop]
+module [@js.scope "Promise"] Promise: sig
   type 'a t
+
+  val t_of_js: (Ojs.t -> 'a) -> Ojs.t -> 'a t
+  val t_to_js: ('a -> Ojs.t) -> 'a t -> Ojs.t
+
+  val resolve: 'a -> 'a t [@@js.global] 
+
+  [@@@js.stop]
   val then_: ?error:(Ojs.t -> unit) -> success:('a -> unit) -> 'a t -> unit
+  val and_then: ?error:(Ojs.t -> unit) -> ('a -> 'b t) -> 'a t -> 'b t
   [@@@js.start]
 
   [@@@js.implem
-    type 'a t = (Ojs.t -> 'a) * Ojs.t
+    val then_: Ojs.t -> success:('a -> unit) -> error:(Ojs.t -> unit) option -> unit[@@js.call "then"]
+    let then_ ?error ~success t = then_ t ~success ~error
 
-    let t_of_js f x = (f, x)
-    val then_: Ojs.t -> success:(Ojs.t -> unit) -> error:(Ojs.t -> unit) option -> unit[@@js.call "then"]
-    let then_ ?error ~success (alpha_of_js, ojs) =
-      then_ ojs ~success:(fun x -> success (alpha_of_js x)) ~error
-  ]
+    val and_then : Ojs.t -> success:('a -> 'b t) -> error:(Ojs.t -> unit) option -> 'b t [@@js.call "then"]
+    let and_then ?error success t = and_then t ~success ~error  ]
 end
 
 module Storage : sig
