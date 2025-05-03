@@ -686,6 +686,16 @@ module Document: sig
   val query_selector_all: t -> string -> Element.t list [@@js.call]
 
   val remove_all_selection_ranges: t -> unit [@@js.call "getSelection().removeAllRanges"]
+
+  (** Document readState. See https://developer.mozilla.org/en-US/docs/Web/API/Document/readyState *)  
+  type ready_state =
+    | Loading [@js "loading"]
+    | Interactive [@js "interactive"]
+    | Complete [@js "complete"]
+  [@@js.enum]
+
+  val ready_state: t -> ready_state [@@js.get]
+  val add_event_listener: t -> Event.kind -> (Event.t -> unit) -> bool -> unit [@@js.call]
 end
 
 module History : sig
