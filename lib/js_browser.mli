@@ -358,6 +358,9 @@ module Event : sig
     | NonStandard of string [@js.default]
   [@@js.enum]
 
+  val kind_to_js : kind -> Ojs.t
+  val kind_of_js : Ojs.t -> kind
+
   val target: t -> Ojs.t [@@js.get]
   val related_target: t -> Ojs.t option [@@js.get]
   val prevent_default: t -> unit [@@js.call]
